@@ -1,0 +1,23 @@
+---
+type Props = { description?: string; title?: string }
+
+const { description, title } = Astro.props
+---
+
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+
+    <meta name='viewport' content='width=device-width' />
+
+    <meta name='description' content={description ?? ''} />
+
+    <meta name='generator' content={Astro.generator} />
+    <title>{title ?? 'Astro Starter'}</title>
+  </head>
+
+  <body>
+    <slot />
+  </body>
+</html>
