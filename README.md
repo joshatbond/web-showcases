@@ -27,6 +27,13 @@ Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page
 
 Any static assets, like images, can be placed in the `public/` directory.
 
+## Using This Template
+
+1. Create a new repository on GitHub
+2. Set the origin: `git remote set-url <new repo url>`
+3. Set the upstream: `git remote add upstream git@github.com:joshatbond/astro-template.git`
+4. Push to the new repo: `git push -u origin main`
+
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:
