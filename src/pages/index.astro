@@ -1,8 +1,12 @@
 ---
-import Card, { type CardProps } from '../components/card.astro'
 import Layout from '../layouts/Layout.astro'
 
 const challenges = [
+  {
+    title: 'Card Stacks',
+    url: '/gui-challenges/card-stack',
+    imageURL: '/assets/gui-challenges/card-stacks.png',
+  },
   {
     title: 'Comparison Widget',
     url: '/gui-challenges/compare',
@@ -14,11 +18,11 @@ const challenges = [
     imageURL: '/assets/gui-challenges/picklist.png',
   },
   {
-    title: 'Card Stacks',
-    url: '/gui-challenges/card-stack',
-    imageURL: '/assets/gui-challenges/card-stacks.png',
+    title: 'Settings',
+    url: '/gui-challenges/settings',
+    // imageURL: '/assets/gui-challenges/settings.png',
   },
-] satisfies CardProps[]
+] satisfies { title: string; url: string; imageURL?: string }[]
 ---
 
 <Layout title='UI Showcases'>
@@ -33,7 +37,21 @@ const challenges = [
     </div>
 
     <div class='challenges'>
-      {challenges.map(challenge => <Card {...challenge} />)}
+      <!-- {challenges.map(challenge => <Card {...challenge} />)} -->
+      {
+        challenges.map(card => (
+          <a class='card'>
+            <div>
+              <img
+                src={card.imageURL}
+                alt={card.title}
+                onload='this.classList.add("loaded")'
+              />
+            </div>
+            <p>{card.title}</p>
+          </a>
+        ))
+      }
     </div>
   </main>
 </Layout>
@@ -59,9 +77,44 @@ const challenges = [
       padding: var(--size-3);
 
       > .challenges {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
         gap: var(--size-3);
+
+        > .card {
+          background: var(--surface-2);
+          min-height: 200px;
+          min-width: 200px;
+          display: grid;
+          grid-template-rows: 1fr auto;
+          padding: var(--size-3);
+          border-radius: var(--radius-2);
+          gap: var(--size-3);
+
+          > div {
+            background: var(--surface-1);
+            border-start-start-radius: var(--radius-2);
+            border-start-end-radius: var(--radius-2);
+            overflow: hidden;
+            box-shadow: var(--shadow-2);
+
+            > img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              opacity: 0;
+              transition: opacity 1s ease-in-out;
+
+              &.loaded {
+                opacity: 1;
+                animation: var(--animation-fade-in-bloom) 1s ease-in-out;
+              }
+            }
+          }
+          > p {
+            margin: 0;
+          }
+        }
       }
     }
 
