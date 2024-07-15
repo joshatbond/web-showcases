@@ -17,7 +17,7 @@ const { imageURL, title, url } = Astro.props
 
 <style>
   .card {
-    max-width: var(--size-13);
+    width: var(--size-13);
     display: grid;
     gap: var(--size-3);
     background-color: hsla(0, 100%, 100%, 0.1);
@@ -40,6 +40,7 @@ const { imageURL, title, url } = Astro.props
       text-align: right;
       text-decoration: underline;
       color: var(--link);
+      margin: 0;
     }
   }
 </style>
