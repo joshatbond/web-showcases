@@ -8,13 +8,18 @@ const challenges = [
     url: '/gui-challenges/compare',
     imageURL: '/assets/gui-challenges/comparison-widget.png',
   },
+  {
+    title: 'Form Pick Lists',
+    url: '/gui-challenges/picklists',
+    imageURL: '/assets/gui-challenges/picklist.png',
+  },
 ] satisfies CardProps[]
 ---
 
 <Layout title='UI Showcases'>
-  <main class='space-y-8 p-4'>
+  <main class='dark'>
     <div>
-      <h1 class='text-2xl font-medium'>UI Showcases</h1>
+      <h1>UI Showcases</h1>
 
       <p>
         Here are some examples of web-ui components/concepts that I enjoy and
@@ -22,8 +27,43 @@ const challenges = [
       </p>
     </div>
 
-    <div class='flex flex-wrap gap-4'>
+    <div class='challenges'>
       {challenges.map(challenge => <Card {...challenge} />)}
     </div>
   </main>
 </Layout>
+
+<style>
+  @import "open-props/switch/dark" layer(demo.theme);
+
+  @layer demo.support {
+    .dark {
+      color: var(--text-1);
+      gap: var(--size-10);
+      padding-inline: var(--size-3);
+      padding-inline: max(var(--size-3), env(safe-area-inset-left));
+      background: var(--surface-1);
+    }
+  }
+
+  @layer demo {
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-3);
+      padding: var(--size-3);
+
+      > .challenges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--size-3);
+      }
+    }
+
+    h1 {
+      font-weight: var(--font-weight-6);
+      font-size: var(--font-size-6);
+      margin: 0;
+    }
+  }
+</style>
