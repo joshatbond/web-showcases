@@ -1,7 +1,25 @@
 ---
+import Card from '../components/card.astro'
 import Layout from '../layouts/Layout.astro'
 ---
 
 <Layout>
-  <p>Site is working</p>
+  <main class='space-y-8 p-4'>
+    <div>
+      <h1 class='text-2xl font-medium'>GUI Showcases</h1>
+
+      <p>
+        Here are some examples of web-ui components/concepts that I enjoy and
+        want to keep as a reference.
+      </p>
+    </div>
+
+    <div class='flex flex-wrap gap-4'>
+      <Card
+        title='Comparison Widget'
+        url='/gui-challenges/compare'
+        imageURL='/assets/gui-challenges/comparison-widget.png'
+      />
+    </div>
+  </main>
 </Layout>
