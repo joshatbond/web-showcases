@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Compare Widget</title>
+  </head>
+  <body>
+    <main class='compare'>
+      <section class='before'>
+        <img src='https://assets.codepen.io/2585/Runner.svg' alt='' />
+      </section>
+      <section class='after'>
+        <img src='https://assets.codepen.io/2585/Roboto.svg' alt='' />
+      </section>
+      <input type='range' id='slider' step='0.01' />
+    </main>
+  </body>
+</html>
+
+<style>
+  @layer demo {
+    .compare {
+      display: grid;
+
+      > * {
+        grid-area: 1 / 1;
+      }
+
+      > section {
+        display: grid;
+        place-content: center;
+      }
+
+      .before {
+        background: radial-gradient(
+          circle,
+          rgba(2, 0, 36, 1) 0%,
+          rgba(9, 9, 121, 1) 35%,
+          rgba(5, 106, 127, 1) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          #000 0,
+          var(--mask-position, 50%),
+          #0000 0
+        );
+      }
+      .after {
+        background: radial-gradient(
+          circle,
+          rgba(2, 0, 36, 1) 0%,
+          rgba(57, 9, 121, 1) 35%,
+          rgba(28, 5, 127, 1) 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          #0000 0,
+          var(--mask-position, 50%),
+          #000 0
+        );
+      }
+
+      > input[type='range'] {
+        position: relative;
+        appearance: none;
+        background: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+
+        &::-webkit-slider-thumb {
+          appearance: none;
+          width: 0.24rem;
+          height: 100dvh;
+          background-color: CanvasText;
+        }
+        &::-moz-range-thumb {
+          appearance: none;
+          width: 0.24rem;
+          height: 100dvh;
+          background-color: CanvasText;
+        }
+      }
+      & img {
+        max-inline-size: 100%;
+        max-block-size: 80dvh;
+      }
+    }
+  }
+  @layer demo.support {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      block-size: 100%;
+      color-scheme: dark light;
+    }
+    body {
+      min-block-size: 100%;
+      font-family: system-ui, sans-serif;
+      display: grid;
+    }
+  }
+</style>
+
+<script>
+  const slider = document.querySelector('#slider') as HTMLInputElement | null
+  if (!slider) throw new Error('Slider not found')
+
+  slider.oninput = () => {
+    document.body.style.setProperty('--mask-position', slider.value + '%')
+  }
+</script>
