@@ -7,7 +7,6 @@ plugins:
   [
     '@trivago/prettier-plugin-sort-imports',
     'prettier-plugin-astro',
-    'prettier-plugin-tailwindcss',
   ]
 printWidth: 80
 semi: false
