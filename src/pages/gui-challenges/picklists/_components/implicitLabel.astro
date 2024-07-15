@@ -1,0 +1,11 @@
+---
+type Props = { name: string; type: 'checkbox' | 'radio'; value: string }
+export type ImplicitLabelProps = Props
+
+const { name, type, value } = Astro.props
+---
+
+<label>
+  <input type={type} name={name} value={value} />
+  <slot />
+</label>

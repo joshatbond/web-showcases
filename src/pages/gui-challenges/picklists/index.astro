@@ -1,0 +1,270 @@
+---
+import Layout from '../../../layouts/Layout.astro'
+import ImplicitLabel from './_components/implicitLabel.astro'
+import ExplicitLabel from './_components/explicitLabel.astro'
+
+const data = {
+  picklistCheckbox: [
+    { label: 'Item 1', description: 'Lorem ipsum dolor sit amet' },
+    { label: 'Item 2', description: 'Supporting line text' },
+    { label: 'Item 3', description: 'Item 3' },
+  ],
+  picklistRadio: [
+    { label: 'Choice 1', description: 'Lorem ipsum dolor sit amet' },
+    { label: 'Choice 2', description: 'Supporting line text' },
+    { label: 'Choice 3', description: 'Choice 3' },
+  ],
+  taglist: [
+    'Floral',
+    'Peachy',
+    'Light',
+    'Dry',
+    'Citrus',
+    'Dark',
+    'Crisp',
+    'Piney',
+  ],
+} satisfies {
+  picklistCheckbox: { label: string; description: string }[]
+  picklistRadio: { label: string; description: string }[]
+  taglist: string[]
+}
+---
+
+<Layout title='Form Picklists'>
+  <form id='picklists'>
+    {
+      ['light', 'dark'].map(theme => (
+        <div class={theme}>
+          <fieldset class='picklist'>
+            <legend>A list of items to select</legend>
+            {data.picklistCheckbox.map(item => (
+              <ImplicitLabel
+                name={`${theme}-picklist`}
+                type='checkbox'
+                value={item.label.toLowerCase()}
+              >
+                <span class='rich-label'>
+                  <b class='rich-label--title'>{item.label}</b>
+                  <span class='rich-label--description'>
+                    {item.description}
+                  </span>
+                </span>
+              </ImplicitLabel>
+            ))}
+          </fieldset>
+
+          <fieldset class='picklist'>
+            <legend>A list of choices to make, select 1.</legend>
+
+            {data.picklistRadio.map(item => (
+              <ImplicitLabel
+                name={`${theme}-radio-picklist`}
+                type='radio'
+                value={item.label.toLowerCase()}
+              >
+                <span class='rich-label'>
+                  <b class='rich-label--title'>{item.label}</b>
+                  <span class='rich-label--description'>
+                    {item.description}
+                  </span>
+                </span>
+              </ImplicitLabel>
+            ))}
+          </fieldset>
+
+          <fieldset class='taglist'>
+            <legend>
+              <b>Flavor profile</b>: (choose many)
+            </legend>
+
+            {data.taglist.map(label => (
+              <ExplicitLabel
+                className='tag-toggle'
+                type='checkbox'
+                name={`${theme}-taglist`}
+                label={label}
+              />
+            ))}
+          </fieldset>
+          <fieldset class='taglist'>
+            <legend>
+              <b>Flavor profile</b>: (choose one)
+            </legend>
+
+            {data.taglist.map(label => (
+              <ExplicitLabel
+                className='tag-toggle'
+                type='radio'
+                name={`${theme}-taglist-radio`}
+                label={label}
+              />
+            ))}
+          </fieldset>
+        </div>
+      ))
+    }
+  </form>
+</Layout>
+
+<style>
+  @import "open-props/switch/light" layer(demo.theme);
+  @import "open-props/switch/dark" layer(demo.theme);
+
+  @layer demo.support {
+    body {
+      display: grid;
+    }
+    form {
+      display: grid;
+
+      @media (width > 720px) {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      & > * {
+        display: grid;
+        place-content: center;
+        padding-block: var(--size-10) var(--size-10);
+      }
+    }
+
+    input[type='radio'],
+    input[type='checkbox'] {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+    }
+
+    .dark,
+    .light {
+      color: var(--text-1);
+      gap: var(--size-10);
+      padding-inline: var(--size-3);
+      padding-inline: max(var(--size-3), env(safe-area-inset-left));
+    }
+
+    .dark {
+      background: var(--surface-1);
+    }
+    .light {
+      background: var(--surface-3);
+    }
+  }
+
+  @layer demo.component {
+    .picklist {
+      padding: 0;
+      border: none;
+      display: grid;
+      align-items: flex-start;
+      gap: 1px;
+      max-inline-size: var(--size-content-2);
+
+      > legend {
+        height: 0;
+        width: 0;
+        overflow: clip;
+      }
+
+      > label {
+        --space: var(--size-3);
+        display: grid;
+        align-items: center;
+        gap: var(--space);
+        grid-auto-flow: column;
+        grid-template-columns: auto 1fr;
+        background: white;
+        padding: var(--space);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        accent-color: var(--link);
+
+        .dark & {
+          background: var(--surface-2);
+        }
+        &:is(:focus-within, :hover) .rich-label--title {
+          color: var(--link);
+        }
+        &:first-of-type {
+          border-start-start-radius: var(--radius-3);
+          border-start-end-radius: var(--radius-3);
+        }
+        &:last-of-type {
+          border-end-start-radius: var(--radius-3);
+          border-end-end-radius: var(--radius-3);
+        }
+
+        > input {
+          margin-inlin: calc(var(--space) * 1.5);
+        }
+
+        > .rich-label {
+          display: grid;
+          padding-inline-end: calc(var(--space) * 2);
+
+          > .rich-label--title {
+            font-weight: var(--font-weight-6);
+            font-size: var(--font-size-2);
+          }
+
+          > .rich-label--description {
+            color: var(--text-2);
+          }
+        }
+      }
+    }
+
+    .taglist {
+      padding: 0;
+      border: none;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: var(--size-2);
+      max-inline-size: var(--size-content-2);
+
+      & > legend {
+        margin-block-end: var(--size-2);
+      }
+
+      > .tag-toggle {
+        display: grid;
+        box-shadow: var(--shadow-1);
+
+        > * {
+          grid-area: 1/1;
+        }
+
+        > label {
+          padding-inline: var(--size-3);
+          padding-block: var(--size-1);
+          background: white;
+          border-radius: var(--radius-2);
+          cursor: pointer;
+
+          .dark & {
+            background: var(--surface-2);
+          }
+        }
+
+        > input {
+          appearance: none;
+          background: none;
+          margin: 0;
+          border: none;
+          inline-size: 100%;
+          block-size: 100%;
+
+          &:checked ~ label {
+            background-color: var(--link);
+            color: var(--surface-1);
+          }
+
+          :not(:checked):is(:focus-within, :hover) ~ label {
+            color: var(--link);
+          }
+        }
+      }
+    }
+  }
+</style>

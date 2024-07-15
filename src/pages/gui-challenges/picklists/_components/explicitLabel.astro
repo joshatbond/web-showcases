@@ -1,0 +1,17 @@
+---
+type Props = {
+  className?: string
+  label: string
+  name: string
+  type: 'checkbox' | 'radio'
+}
+export type ExplicitLabelProps = Props
+
+const { className, label, name, type } = Astro.props
+const id = `${name}-${type}-${label.toLowerCase()}}`
+---
+
+<div class={className}>
+  <input type={type} name={name} value={label.toLowerCase()} id={id} />
+  <label for={id}>{label}</label>
+</div>
