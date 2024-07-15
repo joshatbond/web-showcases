@@ -6,7 +6,7 @@ This project is my default starting point for Astro projects. It comes with:
 - [Astro](https://astro.build/)
 - [Typescript](https://www.typescriptlang.org/)
 - [A fleshed-out prettier config](https://prettier.io/)
-- [Tailwind CSS](https://tailwindcss.com/docs/)
+- [Open-Props](https://open-props.style/#typography)
 
 ## 🚀 Project Structure
 
