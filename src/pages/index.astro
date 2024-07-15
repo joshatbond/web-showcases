@@ -1,6 +1,14 @@
 ---
-import Card from '../components/card.astro'
+import Card, { type CardProps } from '../components/card.astro'
 import Layout from '../layouts/Layout.astro'
+
+const challenges = [
+  {
+    title: 'Comparison Widget',
+    url: '/gui-challenges/compare',
+    imageURL: '/assets/gui-challenges/comparison-widget.png',
+  },
+] satisfies CardProps[]
 ---
 
 <Layout title='UI Showcases'>
@@ -15,11 +23,7 @@ import Layout from '../layouts/Layout.astro'
     </div>
 
     <div class='flex flex-wrap gap-4'>
-      <Card
-        title='Comparison Widget'
-        url='/gui-challenges/compare'
-        imageURL='/assets/gui-challenges/comparison-widget.png'
-      />
+      {challenges.map(challenge => <Card {...challenge} />)}
     </div>
   </main>
 </Layout>
