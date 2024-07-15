@@ -1,0 +1,275 @@
+---
+const formProperties = {
+  transformOrigin: {
+    name: 'stack-typed',
+    type: 'radio',
+    settings: [
+      { label: 'center', id: 'mode-center', checked: true },
+      { label: 'bottom center', id: 'mode-bottom-center' },
+      { label: 'bottom left', id: 'mode-bottom-left' },
+      { label: 'top left', id: 'mode-top-left' },
+      { label: 'top right', id: 'mode-top-right' },
+      { label: 'bottom right', id: 'mode-bottom-right' },
+    ],
+  },
+  custom: {
+    name: 'stack-typed',
+    type: 'radio',
+    settings: [
+      { label: 'center 200%', id: 'mode-better-bottom-center' },
+      { label: '-25% -25%', id: 'mode-better-top-left' },
+    ],
+  },
+}
+---
+
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Card Stacks</title>
+  </head>
+
+  <body class='dark'>
+    <form>
+      <fieldset>
+        <legend>Transform Origin</legend>
+
+        <div>
+          <p>Normal Transforms</p>
+          {
+            formProperties.transformOrigin.settings.map(setting => (
+              <label>
+                <input
+                  type='radio'
+                  id={setting.id}
+                  name={formProperties.transformOrigin.name}
+                  value={setting.id}
+                  checked={setting.checked}
+                />
+                <span>{setting.label}</span>
+              </label>
+            ))
+          }
+        </div>
+
+        <div>
+          <p>Custom Transforms</p>
+          {
+            formProperties.custom.settings.map(setting => (
+              <label>
+                <input
+                  type='radio'
+                  id={setting.id}
+                  name={formProperties.custom.name}
+                  value={setting.id}
+                />
+                <span>{setting.label}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Gap</legend>
+        <input id='slider' type='range' min='0' max='20' value='5' />
+      </fieldset>
+    </form>
+
+    <div class='card-stack'>
+      <div class='card'></div>
+      <div class='card'></div>
+      <div class='card'></div>
+      <div class='card'></div>
+      <div class='card'></div>
+    </div>
+  </body>
+</html>
+
+<style>
+  @import 'open-props/switch/dark' layer(demo.theme);
+
+  @layer demo.support {
+    body {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      grid-template-columns: 1fr;
+      place-items: center;
+      padding: var(--size-5);
+      gap: var(--size-5);
+      overflow: hidden;
+      min-height: 100dvh;
+
+      @media (width > 1024px) {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: 1fr;
+      }
+    }
+
+    .dark {
+      color: var(--text-1);
+      gap: var(--size-10);
+      padding-inline: var(--size-3);
+      padding-inline: max(var(--size-3), env(safe-area-inset-left));
+      background: var(--surface-1);
+    }
+
+    .card {
+      aspect-ratio: var(--ratio-portrait);
+      background: var(--surface-2);
+      border-radius: var(--radius-4);
+      box-shadow: var(--shadow-3);
+
+      &:nth-of-type(5) {
+        background: var(--indigo-5);
+      }
+      &:nth-of-type(4) {
+        background: var(--purple-5);
+      }
+      &:nth-of-type(3) {
+        background: var(--violet-5);
+      }
+      &:nth-of-type(2) {
+        background: var(--blue-5);
+      }
+      &:nth-of-type(1) {
+        background: var(--teal-5);
+      }
+    }
+
+    form {
+      display: grid;
+      gap: var(--size-3);
+      justify-items: start;
+
+      fieldset {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--size-3);
+
+        > input[type='radio'] {
+          inline-size: auto;
+          block-size: auto;
+        }
+
+        > div {
+          max-width: max-content;
+          > p {
+            margin: 0;
+            font-size: var(--font-size-1);
+            font-weight: var(--font-weight-6);
+            color: var(--text-2);
+          }
+
+          > label {
+            /* white-space: nowrap; */
+
+            &:first-of-type {
+              margin-inline-start: var(--size-3);
+            }
+          }
+        }
+
+        @media (width > 1024px) {
+          display: grid;
+
+          > div {
+            > label {
+              grid-column: 2;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @layer demo {
+    .card-stack {
+      justify-self: center;
+      display: grid;
+      grid: [gui] 1fr / [challenges] min(50vmin, 40ch);
+
+      .card {
+        --better-bottom-left: -25% 125%;
+        --better-bottom-center: center 200%;
+        --better-bottom-right: 125% 125%;
+        --better-top-left: -25% -25%;
+        --better-top-center: center -200%;
+        --better-top-right: 125% -25%;
+
+        grid-area: gui / challenges;
+        transform: rotate(var(--r, 0deg)) translateY(var(--t, 0px));
+        transition:
+          transform-origin 0.5s var(--ease-squish-4),
+          transform 0.25s var(--ease-in-out-3);
+
+        &:hover {
+          --t: -50px;
+        }
+        &:nth-of-type(5) {
+          --r: 0deg;
+        }
+        &:nth-of-type(4) {
+          --r: calc(var(--scalar, 5) * 1deg);
+        }
+        &:nth-of-type(3) {
+          --r: calc(var(--scalar, 5) * -1 * 1deg);
+        }
+        &:nth-of-type(2) {
+          --r: calc(var(--scalar, 5) * 2 * 1deg);
+        }
+        &:nth-of-type(1) {
+          --r: calc(var(--scalar, 5) * -2 * 1deg);
+        }
+      }
+
+      /* @media (width > 1024px) {
+        justify-self: start;
+      } */
+    }
+
+    /* radio states */
+    html:has(#mode-bottom-left:checked) .card-stack > .card {
+      transform-origin: bottom left;
+    }
+    html:has(#mode-top-left:checked) .card-stack > .card {
+      transform-origin: top left;
+    }
+    html:has(#mode-top-right:checked) .card-stack > .card {
+      transform-origin: top right;
+    }
+    html:has(#mode-bottom-right:checked) .card-stack > .card {
+      transform-origin: bottom right;
+    }
+    html:has(#mode-bottom-center:checked) .card-stack > .card {
+      transform-origin: bottom center;
+    }
+    html:has(#mode-better-bottom-center:checked) .card-stack > .card {
+      transform-origin: var(--better-bottom-center);
+    }
+    html:has(#mode-better-bottom-left:checked) .card-stack > .card {
+      transform-origin: var(--better-bottom-center);
+    }
+    html:has(#mode-center:checked) .card-stack > .card {
+      transform-origin: center;
+    }
+  }
+</style>
+
+<script>
+  const cardStack = document.querySelector(
+    '.card-stack'
+  ) as HTMLDivElement | null
+  const slider = document.querySelector('#slider') as HTMLInputElement | null
+
+  if (!cardStack || !slider) throw new Error('elements missing')
+
+  slider.oninput = event => {
+    cardStack.style.setProperty(
+      '--scalar',
+      (event.target as HTMLInputElement).value
+    )
+  }
+</script>
