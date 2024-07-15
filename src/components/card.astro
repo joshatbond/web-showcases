@@ -8,14 +8,7 @@ const { imageURL, title, url } = Astro.props
 <a href={url}>
   <div class='card'>
     <div>
-      {
-        imageURL && (
-          <img
-            src={imageURL}
-            alt={title}
-          />
-        )
-      }
+      {imageURL && <img src={imageURL} alt={title} />}
     </div>
 
     <p>{title}</p>
@@ -41,7 +34,6 @@ const { imageURL, title, url } = Astro.props
         height: 100%;
         display: block;
       }
-
     }
     > p {
       cursor: pointer;
