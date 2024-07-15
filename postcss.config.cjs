@@ -1,5 +1,7 @@
-import plugin from 'tailwindcss'
+const postcssJitProps = require('postcss-jit-props')
+const OpenProps = require('open-props')
+const autoprefixer = require('autoprefixer')
 
-ModuleDetectionKind.exports = {
-  plugins: [require('autoprefixer')],
+module.exports = {
+  plugins: [autoprefixer, postcssJitProps(OpenProps)],
 }
