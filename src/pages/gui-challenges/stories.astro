@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Stories</title>
+
+    <style>
+      @layer demo.support {
+        html {
+          box-sizing: border-box;
+        }
+        body {
+          min-block-size: 100vh;
+          display: grid;
+          place-items: center;
+          font-family: var(--font-system-ui);
+          margin: 0;
+          background: hsl(200 15% 93%);
+        }
+      }
+      @layer demo {
+        body {
+          & > .stories {
+            inline-size: 100vw;
+            block-size: 100vh;
+
+            box-shadow:
+              0 5px 2.5px hsl(200 95% 3% / 0.037),
+              0 12px 6.5px hsl(200 95% 3% / 0.053),
+              0 22.5px 13px hsl(200 95% 3% / 0.065),
+              0 40.2px 24px hsl(200 95% 3% / 0.077),
+              0 75.2px 44px hsl(200 95% 3% / 0.093),
+              0 180px 80px hsl(200 95% 3% / 0.13);
+
+            @media (hover: hover) {
+              border-start-start-radius: 3ch;
+              border-start-end-radius: 3ch;
+            }
+            @media (hover: hover) and (min-width: 480px) {
+              max-block-size: 848px;
+              max-inline-size: 480px;
+            }
+            @media (hover: hover) and (max-height: 880px) and (min-width: 720px) {
+              max-block-size: 568px;
+              max-inline-size: 320px;
+            }
+          }
+        }
+
+        .stories {
+          display: grid;
+          grid: 1fr / auto-flow 100%;
+          gap: 1ch;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          overscroll-behavior: contain;
+          touch-action: pan-x;
+        }
+        .user {
+          scroll-snap-align: start;
+          scroll-snap-stop: always;
+          display: grid;
+          grid: [story] 1fr / [story] 1fr;
+        }
+        .story {
+          grid-area: story;
+          background-size: cover;
+          background-image: var(--bg),
+            linear-gradient(to top, lch(98 0 0), lch(98 0 0));
+          user-select: none;
+          touch-action: manipulation;
+          transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1);
+
+          &.seen {
+            opacity: 0;
+            pointer-events: none;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class='stories dark'>
+      <section class='user'>
+        <article class='story' style='--bg: url(https://picsum.photos/480/840)'>
+        </article>
+        <article class='story' style='--bg: url(https://picsum.photos/480/841)'>
+        </article>
+        <article class='story' style='--bg: url(https://picsum.photos/481/840)'>
+        </article>
+      </section>
+      <section class='user'>
+        <article class='story' style='--bg: url(https://picsum.photos/481/841)'>
+        </article>
+        <article class='story' style='--bg: url(https://picsum.photos/482/840)'>
+        </article>
+        <article class='story' style='--bg: url(https://picsum.photos/482/843)'>
+        </article>
+      </section>
+      <section class='user'>
+        <article class='story' style='--bg: url(https://picsum.photos/482/844)'>
+        </article>
+        <article class='story' style='--bg: url(https://picsum.photos/480/842)'>
+        </article>
+        <article class='story' style='--bg: url(https://picsum.photos/481/842)'>
+        </article>
+      </section>
+    </div>
+  </body>
+</html>
+
+<script>
+  const stories = document.querySelector('.stories') as HTMLDivElement | null
+  if (!stories) throw new Error('stories missing')
+
+  const median = stories.offsetLeft + stories.clientWidth / 2
+  const state = {
+    currentStory: stories.firstElementChild?.lastElementChild,
+  }
+
+  stories.addEventListener('click', e => {
+    console.log('click')
+    if ((e.target as HTMLElement).nodeName !== 'ARTICLE') return
+
+    navigateStories(e.clientX > median ? 'next' : 'prev')
+  })
+  stories.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      navigateStories(e.key === 'ArrowDown' ? 'next' : 'prev')
+    }
+  })
+
+  function navigateStories(direction: 'next' | 'prev') {
+    const story = state.currentStory
+    const lastItemInUserStory = story?.parentNode?.firstElementChild
+    const firstItemInUserStory = story?.parentNode?.lastElementChild
+    const hasNextUserStory = story?.parentElement?.nextElementSibling
+    const hasPrevUserStory = story?.parentElement?.previousElementSibling
+
+    if (direction === 'next') {
+      if (lastItemInUserStory === story && !hasNextUserStory) {
+        return
+      } else if (lastItemInUserStory === story && hasNextUserStory) {
+        state.currentStory =
+          story.parentElement.nextElementSibling.lastElementChild
+        story.parentElement.nextElementSibling.scrollIntoView({
+          behavior: 'smooth',
+        })
+      } else {
+        story?.classList.add('seen')
+        state.currentStory = story?.previousElementSibling
+      }
+    } else {
+      if (firstItemInUserStory === story && !hasPrevUserStory) {
+        return
+      } else if (firstItemInUserStory === story && hasPrevUserStory) {
+        state.currentStory =
+          story.parentElement.previousElementSibling.firstElementChild
+        story.parentElement.previousElementSibling.scrollIntoView({
+          behavior: 'smooth',
+        })
+      } else {
+        story?.nextElementSibling?.classList.remove('seen')
+        state.currentStory = story?.nextElementSibling
+      }
+    }
+  }
+</script>

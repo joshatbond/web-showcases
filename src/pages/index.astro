@@ -18,9 +18,9 @@ const challenges = [
     imageURL: '/assets/gui-challenges/picklist.png',
   },
   {
-    title: 'Settings',
-    url: '/gui-challenges/settings',
-    // imageURL: '/assets/gui-challenges/settings.png',
+    title: 'Stories',
+    url: '/gui-challenges/stories',
+    imageURL: '/assets/gui-challenges/stories.png',
   },
 ] satisfies { title: string; url: string; imageURL?: string }[]
 ---
@@ -40,7 +40,7 @@ const challenges = [
       <!-- {challenges.map(challenge => <Card {...challenge} />)} -->
       {
         challenges.map(card => (
-          <a class='card'>
+          <a class='card' href={card.url}>
             <div>
               <img
                 src={card.imageURL}
