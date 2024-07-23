@@ -32,6 +32,7 @@ const assets = {
     const material = new MeshLambertMaterial({ color: 0x777777 })
     const mesh = new Mesh(geometry, material)
     mesh.userData = { id: 'building-3', x, y }
+    mesh.scale.set(1, 3, 1)
     mesh.position.set(x, 1.5, y)
 
     return mesh
