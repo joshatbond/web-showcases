@@ -1,10 +1,10 @@
+import { createCity } from './city'
 import { createScene } from './scene'
 
-window.onload = () => {
-  window.scene = createScene()
-  window.addEventListener('mousedown', window.scene.onMouseDown)
-  window.addEventListener('mousemove', window.scene.onMouseMove)
-  window.addEventListener('mouseup', window.scene.onMouseUp)
-  window.addEventListener('contextmenu', event => event.preventDefault())
-  window.scene.start()
-}
+const scene = createScene()
+const city = createCity(8)
+
+scene.initialize(city)
+scene.start()
+
+window.scene = scene
