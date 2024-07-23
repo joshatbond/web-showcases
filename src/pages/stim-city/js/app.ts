@@ -1,10 +1,3 @@
-import { createCity } from './city'
-import { createScene } from './scene'
+import { Game } from './game'
 
-const scene = createScene()
-const city = createCity(8)
-
-scene.initialize(city)
-scene.start()
-
-window.scene = scene
+const game = new Game()
