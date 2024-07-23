@@ -53,7 +53,9 @@ export class Scene {
 
       for (let y = 0; y < city.data.length; y++) {
         // terrain
-        const mesh = createAssetInstance(city.data[x][y].terrainId, x, y)
+        const mesh = createAssetInstance(city.data[x][y].terrainId, x, y, {
+          height: 0,
+        })
 
         if (mesh) {
           this.scene.add(mesh)
@@ -72,21 +74,31 @@ export class Scene {
   update(city: City['data']) {
     for (let x = 0; x < city.length; x++) {
       for (let y = 0; y < city.length; y++) {
-        const currentBuildingId = this.buildingMeshes[x][y]?.userData.id
-        const newBuildingId = city[x][y].building?.id
+        const existingBuildingMesh = this.buildingMeshes[x][y]
+        const tile = city[x][y]
 
-        if (!newBuildingId && currentBuildingId) {
-          this.scene.remove(this.buildingMeshes[x][y]!)
+        // If the player removes a building, remove it from the scene
+        if (!tile.building && existingBuildingMesh) {
+          this.scene.remove(existingBuildingMesh)
           this.buildingMeshes[x][y] = null
         }
-        if (newBuildingId !== currentBuildingId) {
-          if (this.buildingMeshes[x][y]) {
-            this.scene.remove(this.buildingMeshes[x][y]!)
+
+        // if the data model has changed, update the mesh
+        if (
+          tile.building &&
+          (tile.building.dirty || tile.building.dirty === undefined)
+        ) {
+          if (existingBuildingMesh) {
+            this.scene.remove(existingBuildingMesh)
           }
-          if (newBuildingId) {
-            this.buildingMeshes[x][y] = createAssetInstance(newBuildingId, x, y)
-            this.scene.add(this.buildingMeshes[x][y]!)
-          }
+          this.buildingMeshes[x][y] = createAssetInstance(
+            tile.building.id,
+            x,
+            y,
+            tile.building
+          )
+          this.scene.add(this.buildingMeshes[x][y]!)
+          tile.building.dirty = false
         }
       }
     }

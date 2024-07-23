@@ -1,28 +1,64 @@
 import type { BuildingId } from './assets'
 
-export default {
+const buildings: Record<
+  BuildingId,
+  () => { id: BuildingId; height: number; update: () => void; dirty?: boolean }
+> = {
   residential: () => {
     return {
       id: 'residential',
-      update: () => {},
+      height: 1,
+      // dirty: true,
+      update: function () {
+        if (Math.random() < 0.01) {
+          this.dirty = true
+          if (this.height < 5) {
+            this.height += 1
+          }
+        }
+      },
     }
   },
   commercial: () => {
     return {
       id: 'commercial',
-      update: () => {},
+      height: 1,
+      // dirty: true,
+      update: function () {
+        if (Math.random() < 0.01) {
+          if (this.height < 5) {
+            this.dirty = true
+            this.height += 1
+          }
+        }
+      },
     }
   },
   industrial: () => {
     return {
       id: 'industrial',
-      update: () => {},
+      height: 1,
+      // dirty: true,
+      update: function () {
+        if (Math.random() < 0.01) {
+          if (this.height < 5) {
+            this.dirty = true
+            this.height += 1
+          }
+        }
+      },
     }
   },
   road: () => {
     return {
       id: 'road',
-      update: () => {},
+      height: 0.1,
+      // dirty: true,
+      update: function () {
+        this.dirty = false
+      },
     }
   },
-} satisfies Record<BuildingId, () => { id: BuildingId; update: () => void }>
+} as const
+
+export default buildings

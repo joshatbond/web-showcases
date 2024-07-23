@@ -1,4 +1,4 @@
-import type { AssetId, BuildingId, TerrainId } from './assets'
+import type { BuildingId, TerrainId } from './assets'
 import buildings from './buildings'
 
 export class City {
