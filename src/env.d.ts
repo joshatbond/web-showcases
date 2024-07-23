@@ -1,8 +1,8 @@
 /// <reference types="astro/client" />
-import { createScene } from './pages/sim-city/js/scene'
+import type { Game } from './pages/stim-city/js/game'
 
 declare global {
   interface Window {
-    scene: ReturnType<typeof createScene>
+    game: Game
   }
 }
