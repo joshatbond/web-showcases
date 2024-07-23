@@ -1,14 +1,14 @@
 import * as THREE from 'three'
 
 import { createAssetInstance } from './assets'
-import { createCamera } from './camera'
+import { Camera } from './camera'
 import type { City } from './city'
 import { Controls } from './controls'
 
 export class Scene {
   scene: THREE.Scene
   controls: Controls
-  camera: THREE.PerspectiveCamera
+  camera: Camera
   renderer: THREE.WebGLRenderer
   raycaster: THREE.Raycaster
   mouse: THREE.Vector2
@@ -31,7 +31,7 @@ export class Scene {
     this.selectedObject = null
 
     this.controls = new Controls()
-    this.camera = createCamera(
+    this.camera = new Camera(
       gameWindow.offsetWidth / gameWindow.offsetHeight,
       this.controls
     )
@@ -40,7 +40,7 @@ export class Scene {
     this.renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight)
     gameWindow.appendChild(this.renderer.domElement)
 
-    this.scene.add(this.camera)
+    this.scene.add(this.camera.camera)
     this.controls.subscribe('onMouseDown', this.onMouseDown.bind(this))
   }
 
@@ -64,6 +64,8 @@ export class Scene {
       this.terrainMeshes.push(column)
       this.buildingMeshes.push([...Array(city.size)])
     }
+    const center = Math.floor(city.size / 2)
+    this.camera.updateOrigin(center)
 
     this.setupLights()
   }
@@ -109,7 +111,7 @@ export class Scene {
       (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1
     this.mouse.y =
       -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1
-    this.raycaster.setFromCamera(this.mouse, this.camera)
+    this.raycaster.setFromCamera(this.mouse, this.camera.camera)
 
     let intersections = this.raycaster.intersectObjects(
       this.scene.children,
@@ -131,7 +133,7 @@ export class Scene {
   }
 
   draw() {
-    this.renderer.render(this.scene, this.camera)
+    this.renderer.render(this.scene, this.camera.camera)
   }
   start() {
     this.renderer.setAnimationLoop(this.draw.bind(this))
