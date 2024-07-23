@@ -1,27 +1,37 @@
-export function createCity(size: number) {
-  const data: Tile[][] = []
+export class City {
+  size: number
+  data: Tile[][]
 
-  initialize()
+  constructor(size: number) {
+    this.data = []
+    this.size = size
 
-  function initialize() {
-    for (let x = 0; x < size; x++) {
+    this.initialize()
+  }
+
+  initialize() {
+    for (let x = 0; x < this.size; x++) {
       const column: Tile[] = []
 
-      for (let y = 0; y < size; y++) {
+      for (let y = 0; y < this.size; y++) {
         column.push({
           x,
           y,
           building: Math.random() > 0.7 ? 'building' : undefined,
+          update: () => {},
         })
       }
 
-      data.push(column)
+      this.data.push(column)
     }
   }
 
-  return {
-    size,
-    data,
+  update() {
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        this.data[x][y].update()
+      }
+    }
   }
 }
 
@@ -29,4 +39,5 @@ type Tile = {
   x: number
   y: number
   building?: string
+  update: () => void
 }
