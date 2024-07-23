@@ -1,34 +1,42 @@
 import * as THREE from 'three'
 
 import { createCamera } from './camera'
-import type { createCity } from './city'
+import type { City } from './city'
 import { Controls } from './controls'
 
-export function createScene() {
-  // initial scene setup
-  const gameWindow = document.querySelector(
-    '.render-target'
-  ) as HTMLDivElement | null
-  if (!gameWindow) throw new Error('game window missing')
+export class Scene {
+  scene: THREE.Scene
+  controls: Controls
+  camera: THREE.PerspectiveCamera
+  renderer: THREE.WebGLRenderer
 
-  const scene = new THREE.Scene()
-  scene.background = new THREE.Color(0x777777)
+  meshes: THREE.Mesh[][] = []
 
-  const controls = new Controls()
-  const camera = createCamera(
-    gameWindow.offsetWidth / gameWindow.offsetHeight,
-    controls
-  )
+  constructor() {
+    const gameWindow = document.querySelector(
+      '.render-target'
+    ) as HTMLDivElement | null
+    if (!gameWindow) throw new Error('game window missing')
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true })
-  renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight)
-  gameWindow.appendChild(renderer.domElement)
+    this.scene = new THREE.Scene()
+    this.scene.background = new THREE.Color(0x777777)
 
-  let meshes: THREE.Mesh[][] = []
+    this.controls = new Controls()
+    this.camera = createCamera(
+      gameWindow.offsetWidth / gameWindow.offsetHeight,
+      this.controls
+    )
 
-  function initialize({ data: city }: ReturnType<typeof createCity>) {
-    scene.clear()
-    meshes = []
+    this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    this.renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight)
+    gameWindow.appendChild(this.renderer.domElement)
+
+    this.scene.add(this.camera)
+  }
+
+  initialize(city: City['data']) {
+    this.scene.clear()
+    this.meshes = []
 
     for (let x = 0; x < city.length; x++) {
       const column: THREE.Mesh[] = []
@@ -40,7 +48,7 @@ export function createScene() {
         const mesh = new THREE.Mesh(geometry, material)
         mesh.position.set(x, -0.5, y)
 
-        scene.add(mesh)
+        this.scene.add(mesh)
 
         column.push(mesh)
 
@@ -57,19 +65,20 @@ export function createScene() {
           )
           buildingMesh.position.set(x, 0.5, y)
 
-          scene.add(buildingMesh)
+          this.scene.add(buildingMesh)
         }
 
         column.push(mesh)
       }
 
-      meshes.push(column)
+      this.meshes.push(column)
     }
 
-    setupLights()
+    this.setupLights()
   }
+  update(city: City['data']) {}
 
-  function setupLights() {
+  setupLights() {
     const lights = [
       new THREE.AmbientLight(0xffffff, 0.2),
       new THREE.DirectionalLight(0xffffff, 0.3),
@@ -80,18 +89,16 @@ export function createScene() {
     lights[2].position.set(1, 1, 0)
     lights[3].position.set(0, 1, 1)
 
-    scene.add(...lights)
+    this.scene.add(...lights)
   }
 
-  function draw() {
-    renderer.render(scene, camera)
+  draw() {
+    this.renderer.render(this.scene, this.camera)
   }
-  function start() {
-    renderer.setAnimationLoop(draw)
+  start() {
+    this.renderer.setAnimationLoop(this.draw.bind(this))
   }
-  function stop() {
-    renderer.setAnimationLoop(null)
+  stop() {
+    this.renderer.setAnimationLoop(null)
   }
-
-  return { initialize, start, stop }
 }
