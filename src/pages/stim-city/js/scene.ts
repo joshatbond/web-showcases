@@ -10,7 +10,8 @@ export class Scene {
   camera: THREE.PerspectiveCamera
   renderer: THREE.WebGLRenderer
 
-  meshes: THREE.Mesh[][] = []
+  terrainMeshes: THREE.Mesh[][] = []
+  buildingMeshes: THREE.Mesh[][] = []
 
   constructor() {
     const gameWindow = document.querySelector(
@@ -34,14 +35,14 @@ export class Scene {
     this.scene.add(this.camera)
   }
 
-  initialize(city: City['data']) {
+  initialize(city: City) {
     this.scene.clear()
-    this.meshes = []
+    this.terrainMeshes = []
 
-    for (let x = 0; x < city.length; x++) {
+    for (let x = 0; x < city.data.length; x++) {
       const column: THREE.Mesh[] = []
 
-      for (let y = 0; y < city.length; y++) {
+      for (let y = 0; y < city.data.length; y++) {
         // terrain
         const geometry = new THREE.BoxGeometry(1, 1, 1)
         const material = new THREE.MeshLambertMaterial({ color: 0x00aa00 })
@@ -49,13 +50,23 @@ export class Scene {
         mesh.position.set(x, -0.5, y)
 
         this.scene.add(mesh)
-
         column.push(mesh)
+      }
 
+      this.terrainMeshes.push(column)
+      this.buildingMeshes.push([...Array(city.size)])
+    }
+
+    this.setupLights()
+  }
+  update(city: City['data']) {
+    for (let x = 0; x < city.length; x++) {
+      for (let y = 0; y < city.length; y++) {
         // buildings
         const tile = city[x][y]
-        if (tile.building === 'building') {
-          const buildingGeometry = new THREE.BoxGeometry(1, 1, 1)
+        if (tile.building && tile.building.startsWith('building')) {
+          const height = Number(tile.building.slice(-1))
+          const buildingGeometry = new THREE.BoxGeometry(1, height, 1)
           const buildingMaterial = new THREE.MeshLambertMaterial({
             color: 0x777777,
           })
@@ -63,20 +74,18 @@ export class Scene {
             buildingGeometry,
             buildingMaterial
           )
-          buildingMesh.position.set(x, 0.5, y)
+          buildingMesh.position.set(x, height / 2, y)
+
+          if (this.buildingMeshes[x][y]) {
+            this.scene.remove(this.buildingMeshes[x][y])
+          }
 
           this.scene.add(buildingMesh)
+          this.buildingMeshes[x][y] = buildingMesh
         }
-
-        column.push(mesh)
       }
-
-      this.meshes.push(column)
     }
-
-    this.setupLights()
   }
-  update(city: City['data']) {}
 
   setupLights() {
     const lights = [

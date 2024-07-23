@@ -7,10 +7,13 @@ export class Game {
 
   constructor() {
     this.scene = new Scene()
-    this.city = new City(8)
+    this.city = new City(16)
 
-    this.scene.initialize(this.city.data)
+    this.scene.initialize(this.city)
     this.scene.start()
+
+    // basic game loop, update every second
+    setInterval(this.update.bind(this), 1000)
   }
 
   update() {
