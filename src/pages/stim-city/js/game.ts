@@ -10,6 +10,10 @@ export class Game {
     this.city = new City(16)
 
     this.scene.initialize(this.city)
+    this.scene.onObjectSelected = selectedObject => {
+      const { x, y } = selectedObject.userData
+      const tile = this.city.data[x][y]
+    }
     this.scene.start()
 
     // basic game loop, update every second

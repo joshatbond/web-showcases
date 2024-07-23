@@ -13,6 +13,7 @@ export class Scene {
   raycaster: THREE.Raycaster
   mouse: THREE.Vector2
   selectedObject: THREE.Object3D | null
+  onObjectSelected: ((object: THREE.Object3D) => void) | undefined
 
   terrainMeshes: THREE.Mesh[][] = []
   buildingMeshes: (THREE.Mesh | null)[][] = []
@@ -122,6 +123,9 @@ export class Scene {
       this.selectedObject = intersections[0].object
       if (this.selectedObject instanceof THREE.Mesh) {
         this.selectedObject.material.emissive.setHex(0x555555)
+      }
+      if (this.onObjectSelected) {
+        this.onObjectSelected(this.selectedObject)
       }
     }
   }
