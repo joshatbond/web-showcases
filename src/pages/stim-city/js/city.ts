@@ -33,7 +33,8 @@ export class City {
 class Tile {
   x: number
   y: number
-  building?: 'building-1' | 'building-2' | 'building-3'
+  terrainId = 'grass'
+  buildingId?: 'building-1' | 'building-2' | 'building-3'
 
   constructor(x: number, y: number) {
     this.x = x
@@ -43,15 +44,15 @@ class Tile {
   update() {
     const x = Math.random()
     if (x < 0.01) {
-      switch (this.building) {
+      switch (this.buildingId) {
         case undefined:
-          this.building = 'building-1'
+          this.buildingId = 'building-1'
           break
         case 'building-1':
-          this.building = 'building-2'
+          this.buildingId = 'building-2'
           break
         case 'building-2':
-          this.building = 'building-3'
+          this.buildingId = 'building-3'
           break
         default:
           break
