@@ -5,6 +5,8 @@ export class Game {
   scene: Scene
   city: City
 
+  activeToolId: string = ''
+
   constructor() {
     this.scene = new Scene()
     this.city = new City(16)
@@ -23,5 +25,10 @@ export class Game {
   update() {
     this.city.update()
     this.scene.update(this.city.data)
+  }
+
+  setActiveTool(toolId: string) {
+    this.activeToolId = toolId
+    console.log(this.activeToolId)
   }
 }
