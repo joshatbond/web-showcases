@@ -43,22 +43,5 @@ class Tile {
     this.y = y
   }
 
-  update() {
-    const x = Math.random()
-    if (x < 0.01) {
-      switch (this.buildingId) {
-        case undefined:
-          this.buildingId = 'building-1'
-          break
-        case 'building-1':
-          this.buildingId = 'building-2'
-          break
-        case 'building-2':
-          this.buildingId = 'building-3'
-          break
-        default:
-          break
-      }
-    }
-  }
+  update() {}
 }
