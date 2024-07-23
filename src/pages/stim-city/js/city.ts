@@ -1,4 +1,5 @@
-import type { AssetId } from './assets'
+import type { AssetId, BuildingId, TerrainId } from './assets'
+import buildings from './buildings'
 
 export class City {
   size: number
@@ -26,7 +27,7 @@ export class City {
   update() {
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
-        this.data[x][y].update()
+        this.data[x][y].building?.update()
       }
     }
   }
@@ -35,13 +36,11 @@ export class City {
 class Tile {
   x: number
   y: number
-  terrainId: AssetId = 'grass'
-  buildingId?: AssetId
+  terrainId: TerrainId = 'grass'
+  building?: ReturnType<(typeof buildings)[BuildingId]>
 
   constructor(x: number, y: number) {
     this.x = x
     this.y = y
   }
-
-  update() {}
 }

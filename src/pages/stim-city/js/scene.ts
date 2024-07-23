@@ -73,7 +73,7 @@ export class Scene {
     for (let x = 0; x < city.length; x++) {
       for (let y = 0; y < city.length; y++) {
         const currentBuildingId = this.buildingMeshes[x][y]?.userData.id
-        const newBuildingId = city[x][y].buildingId
+        const newBuildingId = city[x][y].building?.id
 
         if (!newBuildingId && currentBuildingId) {
           this.scene.remove(this.buildingMeshes[x][y]!)

@@ -56,6 +56,8 @@ export function createAssetInstance(assetId: AssetId, x: number, y: number) {
   return assets[assetId](x, y)
 }
 export type AssetId = keyof typeof assets
-export function isAssetId(id: string): id is AssetId {
-  return assetIds.includes(id as AssetId)
+export type TerrainId = Extract<AssetId, 'grass'>
+export type BuildingId = Exclude<AssetId, 'grass'>
+export function isBuildingId(id: string): id is BuildingId {
+  return assetIds.includes(id as BuildingId)
 }
