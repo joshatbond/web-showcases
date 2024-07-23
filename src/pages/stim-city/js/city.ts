@@ -33,7 +33,7 @@ export class City {
 class Tile {
   x: number
   y: number
-  building?: string
+  building?: 'building-1' | 'building-2' | 'building-3'
 
   constructor(x: number, y: number) {
     this.x = x

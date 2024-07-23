@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 
+import { createAssetInstance } from './assets'
 import { createCamera } from './camera'
 import type { City } from './city'
 import { Controls } from './controls'
@@ -44,13 +45,12 @@ export class Scene {
 
       for (let y = 0; y < city.data.length; y++) {
         // terrain
-        const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const material = new THREE.MeshLambertMaterial({ color: 0x00aa00 })
-        const mesh = new THREE.Mesh(geometry, material)
-        mesh.position.set(x, -0.5, y)
+        const mesh = createAssetInstance('grass', x, y)
 
-        this.scene.add(mesh)
-        column.push(mesh)
+        if (mesh) {
+          this.scene.add(mesh)
+          column.push(mesh)
+        }
       }
 
       this.terrainMeshes.push(column)
@@ -65,23 +65,16 @@ export class Scene {
         // buildings
         const tile = city[x][y]
         if (tile.building && tile.building.startsWith('building')) {
-          const height = Number(tile.building.slice(-1))
-          const buildingGeometry = new THREE.BoxGeometry(1, height, 1)
-          const buildingMaterial = new THREE.MeshLambertMaterial({
-            color: 0x777777,
-          })
-          const buildingMesh = new THREE.Mesh(
-            buildingGeometry,
-            buildingMaterial
-          )
-          buildingMesh.position.set(x, height / 2, y)
+          const mesh = createAssetInstance(tile.building, x, y)
 
           if (this.buildingMeshes[x][y]) {
             this.scene.remove(this.buildingMeshes[x][y])
           }
 
-          this.scene.add(buildingMesh)
-          this.buildingMeshes[x][y] = buildingMesh
+          if (mesh) {
+            this.scene.add(mesh)
+            this.buildingMeshes[x][y] = mesh
+          }
         }
       }
     }
