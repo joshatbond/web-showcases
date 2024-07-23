@@ -12,7 +12,7 @@ export class Scene {
   renderer: THREE.WebGLRenderer
 
   terrainMeshes: THREE.Mesh[][] = []
-  buildingMeshes: THREE.Mesh[][] = []
+  buildingMeshes: (THREE.Mesh | null)[][] = []
 
   constructor() {
     const gameWindow = document.querySelector(
@@ -62,18 +62,20 @@ export class Scene {
   update(city: City['data']) {
     for (let x = 0; x < city.length; x++) {
       for (let y = 0; y < city.length; y++) {
-        // buildings
-        const tile = city[x][y]
-        if (tile.building && tile.building.startsWith('building')) {
-          const mesh = createAssetInstance(tile.building, x, y)
+        const currentBuildingId = this.buildingMeshes[x][y]?.userData.id
+        const newBuildingId = city[x][y].buildingId
 
+        if (!newBuildingId && currentBuildingId) {
+          this.scene.remove(this.buildingMeshes[x][y]!)
+          this.buildingMeshes[x][y] = null
+        }
+        if (newBuildingId !== currentBuildingId) {
           if (this.buildingMeshes[x][y]) {
-            this.scene.remove(this.buildingMeshes[x][y])
+            this.scene.remove(this.buildingMeshes[x][y]!)
           }
-
-          if (mesh) {
-            this.scene.add(mesh)
-            this.buildingMeshes[x][y] = mesh
+          if (newBuildingId) {
+            this.buildingMeshes[x][y] = createAssetInstance(newBuildingId, x, y)
+            this.scene.add(this.buildingMeshes[x][y]!)
           }
         }
       }

@@ -6,6 +6,7 @@ const assets = {
   grass: (x: number, y: number) => {
     const material = new MeshLambertMaterial({ color: 0x00aa00 })
     const mesh = new Mesh(geometry, material)
+    mesh.userData = { id: 'grass' }
     mesh.position.set(x, -0.5, y)
 
     return mesh
@@ -13,6 +14,7 @@ const assets = {
   'building-1': (x: number, y: number) => {
     const material = new MeshLambertMaterial({ color: 0x777777 })
     const mesh = new Mesh(geometry, material)
+    mesh.userData = { id: 'building-1' }
     mesh.position.set(x, 0.5, y)
 
     return mesh
@@ -20,6 +22,7 @@ const assets = {
   'building-2': (x: number, y: number) => {
     const material = new MeshLambertMaterial({ color: 0x777777 })
     const mesh = new Mesh(geometry, material)
+    mesh.userData = { id: 'building-2' }
     mesh.scale.set(1, 2, 1)
     mesh.position.set(x, 1, y)
 
@@ -28,6 +31,7 @@ const assets = {
   'building-3': (x: number, y: number) => {
     const material = new MeshLambertMaterial({ color: 0x777777 })
     const mesh = new Mesh(geometry, material)
+    mesh.userData = { id: 'building-3' }
     mesh.position.set(x, 1.5, y)
 
     return mesh
