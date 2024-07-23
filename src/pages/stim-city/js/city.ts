@@ -14,12 +14,7 @@ export class City {
       const column: Tile[] = []
 
       for (let y = 0; y < this.size; y++) {
-        column.push({
-          x,
-          y,
-          building: Math.random() > 0.7 ? 'building' : undefined,
-          update: () => {},
-        })
+        column.push(new Tile(x, y))
       }
 
       this.data.push(column)
@@ -35,9 +30,32 @@ export class City {
   }
 }
 
-type Tile = {
+class Tile {
   x: number
   y: number
   building?: string
-  update: () => void
+
+  constructor(x: number, y: number) {
+    this.x = x
+    this.y = y
+  }
+
+  update() {
+    const x = Math.random()
+    if (x < 0.01) {
+      switch (this.building) {
+        case undefined:
+          this.building = 'building-1'
+          break
+        case 'building-1':
+          this.building = 'building-2'
+          break
+        case 'building-2':
+          this.building = 'building-3'
+          break
+        default:
+          break
+      }
+    }
+  }
 }
