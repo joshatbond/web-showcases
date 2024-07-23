@@ -14,7 +14,7 @@ const Y_AXIS = new Vector3(0, 1, 0)
 const DEG_TO_RAD = Math.PI / 180
 
 export function createCamera(aspectRatio: number, controls: Controls) {
-  controls.subscribe(onMouseMove)
+  controls.subscribe('onMouseMove', onMouseMove)
 
   const camera = new PerspectiveCamera(75, aspectRatio, 0.1, 1000)
   let cameraOrigin = new Vector3(0, 0, 0)
