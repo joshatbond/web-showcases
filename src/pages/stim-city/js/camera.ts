@@ -1,11 +1,9 @@
 import { PerspectiveCamera, Vector3 } from 'three'
 
-const LEFT_MOUSE_BUTTON = 0
-const MIDDLE_MOUSE_BUTTON = 1
-const RIGHT_MOUSE_BUTTON = 2
+import type { Controls } from './controls'
 
-const MIN_CAMERA_RADIUS = 2
-const MAX_CAMERA_RADIUS = 10
+const MIN_CAMERA_RADIUS = 10
+const MAX_CAMERA_RADIUS = 20
 const MIN_CAMERA_ELEVATION = 30
 const MAX_CAMERA_ELEVATION = 90
 const ZOOM_SENSITIVITY = 0.02
@@ -15,40 +13,24 @@ const ROTATION_SENSITIVITY = 0.5
 const Y_AXIS = new Vector3(0, 1, 0)
 const DEG_TO_RAD = Math.PI / 180
 
-export function createCamera(aspectRatio: number) {
+export function createCamera(aspectRatio: number, controls: Controls) {
+  controls.subscribe(onMouseMove)
+
   const camera = new PerspectiveCamera(75, aspectRatio, 0.1, 1000)
   let cameraOrigin = new Vector3(0, 0, 0)
-  let cameraRadius = 4
-  let cameraAzimuth = 0
-  let cameraElevation = 0
-  let isLeftMouseDown = false
-  let isMiddleMouseDown = false
-  let isRightMouseDown = false
+  let cameraRadius = (MIN_CAMERA_RADIUS + MAX_CAMERA_RADIUS) / 2
+  let cameraAzimuth = 135
+  let cameraElevation = 45
   let prevMouseX = 0
   let prevMouseY = 0
   updateCameraPosition()
 
-  function onMouseDown(event: MouseEvent) {
-    switch (event.button) {
-      case LEFT_MOUSE_BUTTON:
-        isLeftMouseDown = true
-        break
-      case MIDDLE_MOUSE_BUTTON:
-        isMiddleMouseDown = true
-        break
-      case RIGHT_MOUSE_BUTTON:
-        isRightMouseDown = true
-        break
-      default:
-        break
-    }
-  }
   function onMouseMove(event: MouseEvent) {
     const dx = event.clientX - prevMouseX
     const dy = event.clientY - prevMouseY
 
     // camera rotation
-    if (isLeftMouseDown) {
+    if (controls.isRotating) {
       cameraAzimuth -= dx * ROTATION_SENSITIVITY
       cameraElevation += dy * ROTATION_SENSITIVITY
       cameraElevation = clamp(
@@ -60,7 +42,7 @@ export function createCamera(aspectRatio: number) {
     }
 
     // camera pan
-    if (isMiddleMouseDown) {
+    if (controls.isPanning) {
       const forward = new Vector3(0, 0, 1).applyAxisAngle(
         Y_AXIS,
         cameraAzimuth * DEG_TO_RAD
@@ -76,7 +58,7 @@ export function createCamera(aspectRatio: number) {
     }
 
     // camera zoom
-    if (isRightMouseDown) {
+    if (controls.isZooming) {
       cameraRadius += dy * ZOOM_SENSITIVITY
       cameraRadius = clamp(cameraRadius, MIN_CAMERA_RADIUS, MAX_CAMERA_RADIUS)
       updateCameraPosition()
@@ -84,21 +66,6 @@ export function createCamera(aspectRatio: number) {
 
     prevMouseX = event.clientX
     prevMouseY = event.clientY
-  }
-  function onMouseUp(event: MouseEvent) {
-    switch (event.button) {
-      case LEFT_MOUSE_BUTTON:
-        isLeftMouseDown = false
-        break
-      case MIDDLE_MOUSE_BUTTON:
-        isMiddleMouseDown = false
-        break
-      case RIGHT_MOUSE_BUTTON:
-        isRightMouseDown = false
-        break
-      default:
-        break
-    }
   }
   /**
    * @description Convert cartesian to spherical coordinates and update camera position
@@ -119,7 +86,7 @@ export function createCamera(aspectRatio: number) {
     camera.updateMatrix()
   }
 
-  return { camera, onMouseDown, onMouseMove, onMouseUp }
+  return camera
 }
 
 function clamp(value: number, min: number, max: number) {

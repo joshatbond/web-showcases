@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 
 import { createCamera } from './camera'
+import type { createCity } from './city'
+import { Controls } from './controls'
 
 export function createScene() {
   // initial scene setup
@@ -12,7 +14,11 @@ export function createScene() {
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x777777)
 
-  const camera = createCamera(gameWindow.offsetWidth / gameWindow.offsetHeight)
+  const controls = new Controls()
+  const camera = createCamera(
+    gameWindow.offsetWidth / gameWindow.offsetHeight,
+    controls
+  )
 
   const renderer = new THREE.WebGLRenderer({ antialias: true })
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight)
@@ -22,9 +28,8 @@ export function createScene() {
   const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
   const mesh = new THREE.Mesh(geometry, material)
   scene.add(mesh)
-
   function draw() {
-    renderer.render(scene, camera.camera)
+    renderer.render(scene, camera)
   }
   function start() {
     renderer.setAnimationLoop(draw)
@@ -32,15 +37,6 @@ export function createScene() {
   function stop() {
     renderer.setAnimationLoop(null)
   }
-  function onMouseDown(event: MouseEvent) {
-    camera.onMouseDown(event)
-  }
-  function onMouseMove(event: MouseEvent) {
-    camera.onMouseMove(event)
-  }
-  function onMouseUp(event: MouseEvent) {
-    camera.onMouseUp(event)
-  }
 
-  return { onMouseDown, onMouseMove, onMouseUp, start, stop }
+  return { start, stop }
 }
