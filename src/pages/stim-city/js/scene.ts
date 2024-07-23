@@ -10,6 +10,9 @@ export class Scene {
   controls: Controls
   camera: THREE.PerspectiveCamera
   renderer: THREE.WebGLRenderer
+  raycaster: THREE.Raycaster
+  mouse: THREE.Vector2
+  selectedObject: THREE.Object3D | null
 
   terrainMeshes: THREE.Mesh[][] = []
   buildingMeshes: (THREE.Mesh | null)[][] = []
@@ -22,6 +25,9 @@ export class Scene {
 
     this.scene = new THREE.Scene()
     this.scene.background = new THREE.Color(0x777777)
+    this.raycaster = new THREE.Raycaster()
+    this.mouse = new THREE.Vector2()
+    this.selectedObject = null
 
     this.controls = new Controls()
     this.camera = createCamera(
@@ -34,6 +40,7 @@ export class Scene {
     gameWindow.appendChild(this.renderer.domElement)
 
     this.scene.add(this.camera)
+    this.controls.subscribe('onMouseDown', this.onMouseDown.bind(this))
   }
 
   initialize(city: City) {
@@ -94,6 +101,29 @@ export class Scene {
     lights[3].position.set(0, 1, 1)
 
     this.scene.add(...lights)
+  }
+
+  onMouseDown(event: MouseEvent) {
+    this.mouse.x =
+      (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1
+    this.mouse.y =
+      -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1
+    this.raycaster.setFromCamera(this.mouse, this.camera)
+
+    let intersections = this.raycaster.intersectObjects(
+      this.scene.children,
+      false
+    )
+    if (intersections.length > 0) {
+      if (this.selectedObject && this.selectedObject instanceof THREE.Mesh) {
+        this.selectedObject.material.emissive.setHex(0x000000)
+      }
+
+      this.selectedObject = intersections[0].object
+      if (this.selectedObject instanceof THREE.Mesh) {
+        this.selectedObject.material.emissive.setHex(0x555555)
+      }
+    }
   }
 
   draw() {
