@@ -38,11 +38,7 @@ const assets = {
   },
 }
 
-export function createAssetInstance(
-  assetId: keyof typeof assets,
-  x: number,
-  y: number
-) {
+export function createAssetInstance(assetId: AssetId, x: number, y: number) {
   if (!(assetId in assets)) {
     console.warn(`asset ${assetId} not found`)
     return null
@@ -50,3 +46,4 @@ export function createAssetInstance(
 
   return assets[assetId](x, y)
 }
+export type AssetId = keyof typeof assets

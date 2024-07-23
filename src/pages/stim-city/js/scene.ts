@@ -45,7 +45,7 @@ export class Scene {
 
       for (let y = 0; y < city.data.length; y++) {
         // terrain
-        const mesh = createAssetInstance('grass', x, y)
+        const mesh = createAssetInstance(city.data[x][y].terrainId, x, y)
 
         if (mesh) {
           this.scene.add(mesh)

@@ -1,3 +1,5 @@
+import type { AssetId } from './assets'
+
 export class City {
   size: number
   data: Tile[][]
@@ -33,8 +35,8 @@ export class City {
 class Tile {
   x: number
   y: number
-  terrainId = 'grass'
-  buildingId?: 'building-1' | 'building-2' | 'building-3'
+  terrainId: AssetId = 'grass'
+  buildingId?: AssetId
 
   constructor(x: number, y: number) {
     this.x = x
