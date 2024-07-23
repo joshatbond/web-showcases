@@ -1,4 +1,5 @@
-import type { AssetId } from './assets'
+import type { AssetId, BuildingId } from './assets'
+import BuildingFactory from './buildings'
 import { City } from './city'
 import { Scene } from './scene'
 
@@ -6,7 +7,7 @@ export class Game {
   scene: Scene
   city: City
 
-  activeToolId: AssetId | 'bulldoze' = 'bulldoze'
+  activeToolId: BuildingId | 'bulldoze' = 'bulldoze'
 
   constructor() {
     this.scene = new Scene()
@@ -18,10 +19,10 @@ export class Game {
       const tile = this.city.data[x][y]
 
       if (this.activeToolId == 'bulldoze') {
-        tile.buildingId = undefined
+        tile.building = undefined
         this.scene.update(this.city.data)
-      } else if (!tile.buildingId) {
-        tile.buildingId = this.activeToolId
+      } else if (!tile.building) {
+        tile.building = BuildingFactory[this.activeToolId]()
         this.scene.update(this.city.data)
       }
     }
@@ -36,7 +37,7 @@ export class Game {
     this.scene.update(this.city.data)
   }
 
-  setActiveTool(toolId: AssetId | 'bulldoze') {
+  setActiveTool(toolId: BuildingId | 'bulldoze') {
     this.activeToolId = toolId
   }
 }
