@@ -11,33 +11,41 @@ const assets = {
 
     return mesh
   },
-  'building-1': (x: number, y: number) => {
-    const material = new MeshLambertMaterial({ color: 0x777777 })
+  residential: (x: number, y: number) => {
+    const material = new MeshLambertMaterial({ color: 0x00ff00 })
     const mesh = new Mesh(geometry, material)
-    mesh.userData = { id: 'building-1', x, y }
+    mesh.userData = { id: 'residential', x, y }
     mesh.position.set(x, 0.5, y)
 
     return mesh
   },
-  'building-2': (x: number, y: number) => {
-    const material = new MeshLambertMaterial({ color: 0x777777 })
+  commercial: (x: number, y: number) => {
+    const material = new MeshLambertMaterial({ color: 0x0000ff })
     const mesh = new Mesh(geometry, material)
-    mesh.userData = { id: 'building-2', x, y }
-    mesh.scale.set(1, 2, 1)
-    mesh.position.set(x, 1, y)
+    mesh.userData = { id: 'commercial', x, y }
+    mesh.position.set(x, 0.5, y)
 
     return mesh
   },
-  'building-3': (x: number, y: number) => {
-    const material = new MeshLambertMaterial({ color: 0x777777 })
+  industrial: (x: number, y: number) => {
+    const material = new MeshLambertMaterial({ color: 0xffff00 })
     const mesh = new Mesh(geometry, material)
-    mesh.userData = { id: 'building-3', x, y }
-    mesh.scale.set(1, 3, 1)
-    mesh.position.set(x, 1.5, y)
+    mesh.userData = { id: 'industrial', x, y }
+    mesh.position.set(x, 0.5, y)
+
+    return mesh
+  },
+  road: (x: number, y: number) => {
+    const material = new MeshLambertMaterial({ color: 0x4444440 })
+    const mesh = new Mesh(geometry, material)
+    mesh.userData = { id: 'road', x, y }
+    mesh.scale.set(1, 0.1, 1)
+    mesh.position.set(x, 0.05, y)
 
     return mesh
   },
 }
+const assetIds = Object.keys(assets) as AssetId[]
 
 export function createAssetInstance(assetId: AssetId, x: number, y: number) {
   if (!(assetId in assets)) {
@@ -48,3 +56,6 @@ export function createAssetInstance(assetId: AssetId, x: number, y: number) {
   return assets[assetId](x, y)
 }
 export type AssetId = keyof typeof assets
+export function isAssetId(id: string): id is AssetId {
+  return assetIds.includes(id as AssetId)
+}
