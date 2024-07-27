@@ -2,17 +2,29 @@ import type { BuildingId } from './assets'
 
 const buildings: Record<
   BuildingId,
-  () => { id: BuildingId; height: number; update: () => void; dirty?: boolean }
+  () => {
+    dirty?: boolean
+    height: number
+    type:
+      | `${Exclude<BuildingId, 'road'>}${1 | 2 | 3}`
+      | Extract<BuildingId, 'road'>
+    update: () => void
+  }
 > = {
   residential: () => {
+    const typeIndex = Math.floor(3 * Math.random())
     return {
-      id: 'residential',
       height: 1,
-      // dirty: true,
+      type:
+        typeIndex === 0
+          ? 'residential1'
+          : typeIndex === 1
+            ? 'residential2'
+            : 'residential3',
       update: function () {
-        if (Math.random() < 0.01) {
-          this.dirty = true
-          if (this.height < 5) {
+        if (this.height < 5) {
+          if (Math.random() < 0.01) {
+            this.dirty = true
             this.height += 1
           }
         }
@@ -20,13 +32,18 @@ const buildings: Record<
     }
   },
   commercial: () => {
+    const typeIndex = Math.floor(3 * Math.random())
     return {
-      id: 'commercial',
       height: 1,
-      // dirty: true,
+      type:
+        typeIndex === 0
+          ? 'commercial1'
+          : typeIndex === 1
+            ? 'commercial2'
+            : 'commercial3',
       update: function () {
-        if (Math.random() < 0.01) {
-          if (this.height < 5) {
+        if (this.height < 5) {
+          if (Math.random() < 0.01) {
             this.dirty = true
             this.height += 1
           }
@@ -35,13 +52,18 @@ const buildings: Record<
     }
   },
   industrial: () => {
+    const typeIndex = Math.floor(3 * Math.random())
     return {
-      id: 'industrial',
       height: 1,
-      // dirty: true,
+      type:
+        typeIndex === 0
+          ? 'industrial1'
+          : typeIndex === 1
+            ? 'industrial2'
+            : 'industrial3',
       update: function () {
-        if (Math.random() < 0.01) {
-          if (this.height < 5) {
+        if (this.height < 5) {
+          if (Math.random() < 0.01) {
             this.dirty = true
             this.height += 1
           }
@@ -51,8 +73,8 @@ const buildings: Record<
   },
   road: () => {
     return {
-      id: 'road',
-      height: 0.1,
+      type: 'road',
+      height: 0.01,
       // dirty: true,
       update: function () {
         this.dirty = false

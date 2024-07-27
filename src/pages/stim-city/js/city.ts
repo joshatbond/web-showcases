@@ -36,7 +36,7 @@ export class City {
 class Tile {
   x: number
   y: number
-  terrainId: TerrainId = 'grass'
+  terrainId: TerrainId = 'ground'
   building?: ReturnType<(typeof buildings)[BuildingId]>
 
   constructor(x: number, y: number) {
