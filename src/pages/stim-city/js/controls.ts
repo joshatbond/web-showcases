@@ -35,7 +35,14 @@ export class Controls {
     window.addEventListener('wheel', this.#onWheel.bind(this))
 
     // prevent right click context menu
-    window.addEventListener('contextmenu', event => event.preventDefault())
+    window.addEventListener('contextmenu', event => {
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.tagName.toLowerCase() === 'canvas'
+      ) {
+        event.preventDefault()
+      }
+    })
   }
 
   subscribe<
@@ -150,6 +157,12 @@ export class Controls {
   }
 
   #onMouseDown(event: MouseEvent) {
+    if (
+      event.target instanceof HTMLElement &&
+      event.target.tagName.toLowerCase() !== 'canvas'
+    ) {
+      return
+    }
     switch (event.button) {
       case this.LEFT_MOUSE_BUTTON:
         this.leftMouseDown = true
