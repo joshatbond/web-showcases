@@ -19,46 +19,185 @@
       .render-target {
         width: 100%;
         height: 100%;
+        overscroll-behavior: contain;
 
         & > #ui-toolbar {
           position: fixed;
-          top: 0;
           bottom: 0;
           left: 0;
-          width: 150px;
-          background-color: hsl(0, 0%, 20%);
+          right: 0;
           padding: 1rem;
+          display: flex;
+          gap: 1rem;
 
           & > .ui-button {
             background-color: #00000055;
-            border: 1px solid black;
+            border: 1px solid #dadada;
             color: lightgray;
-            height: 2.5rem;
-            width: 100%;
             font-size: 1rem;
             margin: 4px 0;
+            border-radius: 100%;
+            width: 4rem;
+            height: 4rem;
           }
           & > .ui-button.selected {
-            background-color: #55558855;
+            border-color: #579ff7;
+            box-shadow: 0px 0px 15px #4195fc;
           }
           & > .ui-button:not(.selected):hover {
-            background-color: #33333355;
+            box-shadow: 0px 0px 15px #4195fc;
           }
         }
+
+        .ui-info {
+          display: flex;
+        }
+      }
+      .ui-panel {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      .ui-info {
+        display: flex;
+        padding-inline: 1rem;
+        padding-block: 1rem;
+        background: #555;
+        color: white;
+        justify-content: space-between;
+        align-items: center;
+
+        & > div {
+          min-width: 8rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #00000055;
+          padding: 0.25rem 0.5rem;
+        }
+
+        & > #time {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+        }
+
+        * > svg {
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+      #ui-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-inline: 1rem;
+        padding-block: 0.5rem;
+        background-color: #999999;
+        .ui-icon {
+          background: url('/assets/stim-city/ui-icons.png');
+          background-size: 300% 200%;
+          resize: both;
+        }
+        .residential {
+          background-position: 0% 0%;
+        }
+        .commercial {
+          background-position: 100% 0%;
+        }
+        .industrial {
+          background-position: 50% 100%;
+        }
+        .road {
+          background-position: 50% 0%;
+        }
+        .destroy {
+          background-position: 0% 100%;
+        }
+        .select {
+          background-position: 100% 100%;
+        }
+      }
+      .ui-button {
+        color: lightgray;
+        border: none;
+        font-size: 1rem;
+        margin: 4px 0;
+        border-radius: 100%;
+        width: 3rem;
+        height: 3rem;
+      }
+      .ui-button.selected {
+        border: 2px solid #bcd3ef;
+        box-shadow: 0px 0px 4px 6px #97b4d7;
+      }
+      .ui-button:not(.selected):hover {
+        box-shadow: 0px 0px 4px 6px #97b4d7;
       }
     </style>
   </head>
   <body>
     <div class='root-window'>
-      <div class='render-target'>
+      <div class='render-target'></div>
+
+      <div class='ui-panel'>
+        <div id='specific-tool'></div>
         <div id='ui-toolbar'>
-          <button id='button-bulldoze' class='ui-button selected'>
-            BULLDOZE
+          <button id='button-select' class='ui-button ui-icon select'></button>
+
+          <div>
+            <button
+              id='button-residential'
+              class='ui-button ui-icon residential'
+            >
+            </button>
+            <button id='button-commercial' class='ui-button ui-icon commercial'>
+            </button>
+            <button id='button-industrial' class='ui-button ui-icon industrial'>
+            </button>
+            <button id='button-road' class='ui-button ui-icon road'></button>
+          </div>
+
+          <button id='button-bulldoze' class='ui-button ui-icon destroy'>
           </button>
-          <button id='button-residential' class='ui-button'>RESIDENTIAL</button>
-          <button id='button-commercial' class='ui-button'>COMMERCIAL</button>
-          <button id='button-industrial' class='ui-button'>INDUSTRIAL</button>
-          <button id='button-road' class='ui-button'>ROAD</button>
+        </div>
+        <div id='info-panel' class='ui-info'>
+          <div id='time'>
+            <div>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='currentColor'
+              >
+                <path
+                  fill-rule='evenodd'
+                  d='M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z'
+                  clip-rule='evenodd'
+                >
+                </path>
+              </svg>
+            </div>
+            <div><span>09:13 AM</span><span>June 2024</span></div>
+            <div>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='currentColor'
+                class='size-6'
+              >
+                <path
+                  d='M5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628L12 14.471v2.34c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256l-7.108-4.061C13.555 6.346 12 7.249 12 8.689v2.34L5.055 7.061Z'
+                >
+                </path>
+              </svg>
+            </div>
+          </div>
+          <div id='season'>Season</div>
+          <div id='city-name'>Newport</div>
+          <div id='population'>0</div>
+          <div id='money'>1,000,000</div>
+          <div id='mood'>:/</div>
         </div>
       </div>
     </div>
