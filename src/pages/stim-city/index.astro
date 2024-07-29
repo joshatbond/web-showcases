@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Stim City</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+      }
+      .root-window {
+        width: 100%;
+        height: 100%;
+      }
+      .render-target {
+        width: 100%;
+        height: 100%;
+
+        & > #ui-toolbar {
+          position: fixed;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          width: 150px;
+          background-color: hsl(0, 0%, 20%);
+          padding: 1rem;
+
+          & > .ui-button {
+            background-color: #00000055;
+            border: 1px solid black;
+            color: lightgray;
+            height: 2.5rem;
+            width: 100%;
+            font-size: 1rem;
+            margin: 4px 0;
+          }
+          & > .ui-button.selected {
+            background-color: #55558855;
+          }
+          & > .ui-button:not(.selected):hover {
+            background-color: #33333355;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class='root-window'>
+      <div class='render-target'>
+        <div id='ui-toolbar'>
+          <button id='button-bulldoze' class='ui-button selected'>
+            BULLDOZE
+          </button>
+          <button id='button-residential' class='ui-button'>RESIDENTIAL</button>
+          <button id='button-commercial' class='ui-button'>COMMERCIAL</button>
+          <button id='button-industrial' class='ui-button'>INDUSTRIAL</button>
+          <button id='button-road' class='ui-button'>ROAD</button>
+        </div>
+      </div>
+    </div>
+
+    <script src='./js/app.ts'></script>
+  </body>
+</html>
