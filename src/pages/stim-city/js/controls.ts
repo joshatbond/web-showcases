@@ -5,14 +5,25 @@ export class Controls {
 
   leftMouseDown = false
   middleMouseDown = false
+  wheelMove = false
+  wheelDirection = 0
   rightMouseDown = false
   shiftKeyDown = false
+  directions = {
+    up: 0,
+    down: 0,
+    left: 0,
+    right: 0,
+    cw: false,
+    ccw: false,
+  }
   subscribers = {
     onKeyDown: [] as ((event: KeyboardEvent) => void)[],
     onKeyUp: [] as ((event: KeyboardEvent) => void)[],
     onMouseDown: [] as ((event: MouseEvent) => void)[],
     onMouseMove: [] as ((event: MouseEvent) => void)[],
     onMouseUp: [] as ((event: MouseEvent) => void)[],
+    onWheel: [] as ((event: WheelEvent) => void)[],
   } as const
 
   constructor() {
@@ -21,19 +32,10 @@ export class Controls {
     window.addEventListener('mousedown', this.#onMouseDown.bind(this))
     window.addEventListener('mousemove', this.#onMouseMove.bind(this))
     window.addEventListener('mouseup', this.#onMouseUp.bind(this))
+    window.addEventListener('wheel', this.#onWheel.bind(this))
 
     // prevent right click context menu
     window.addEventListener('contextmenu', event => event.preventDefault())
-  }
-
-  get isPanning() {
-    return this.leftMouseDown && this.shiftKeyDown
-  }
-  get isRotating() {
-    return this.leftMouseDown && !this.shiftKeyDown
-  }
-  get isZooming() {
-    return this.rightMouseDown
   }
 
   subscribe<
@@ -64,21 +66,65 @@ export class Controls {
       case 'onMouseUp':
         this.subscribers.onMouseUp.push(callback as (event: MouseEvent) => void)
         break
+      case 'onWheel':
+        this.subscribers.onWheel.push(callback as (event: WheelEvent) => void)
+        break
       default:
         break
     }
   }
 
   #onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Shift') {
-      this.shiftKeyDown = true
+    this.shiftKeyDown = event.key === 'Shift'
+    if (
+      (event.key === 'ArrowUp' || event.key.toLowerCase() === 'w') &&
+      !this.directions.up
+    ) {
+      this.directions.up = Date.now()
     }
+    if (
+      (event.key === 'ArrowDown' || event.key.toLowerCase() === 's') &&
+      !this.directions.down
+    ) {
+      this.directions.down = Date.now()
+    }
+    if (
+      (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') &&
+      !this.directions.left
+    ) {
+      this.directions.left = Date.now()
+    }
+    if (
+      (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') &&
+      !this.directions.right
+    ) {
+      this.directions.right = Date.now()
+    }
+    this.directions.cw = event.key.toLowerCase() === 'q'
+    this.directions.ccw = event.key.toLowerCase() === 'e'
+
     for (const callback of this.subscribers.onKeyDown) {
       callback(event)
     }
   }
   #onKeyUp(event: KeyboardEvent) {
     this.shiftKeyDown = false
+    if (event.key === 'ArrowUp' || event.key.toLowerCase() === 'w') {
+      this.directions.up = 0
+    }
+    if (event.key === 'ArrowDown' || event.key.toLowerCase() === 's') {
+      this.directions.down = 0
+    }
+
+    if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') {
+      this.directions.left = 0
+    }
+    if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') {
+      this.directions.right = 0
+    }
+    this.directions.cw = event.key.toLowerCase() === 'q'
+    this.directions.ccw = event.key.toLowerCase() === 'e'
+
     for (const callback of this.subscribers.onKeyUp) {
       callback(event)
     }
@@ -124,6 +170,12 @@ export class Controls {
         break
     }
     for (const callback of this.subscribers.onMouseUp) {
+      callback(event)
+    }
+  }
+
+  #onWheel(event: WheelEvent) {
+    for (const callback of this.subscribers.onWheel) {
       callback(event)
     }
   }
