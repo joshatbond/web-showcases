@@ -1,74 +1,125 @@
-import { BoxGeometry, Mesh, MeshLambertMaterial } from 'three'
+import {
+  BoxGeometry,
+  Mesh,
+  MeshLambertMaterial,
+  RepeatWrapping,
+  TextureLoader,
+} from 'three'
 
-const geometry = new BoxGeometry(1, 1, 1)
+/**
+ *
+ * @param type The type of asset to create
+ * @param x The x-coordinate of the asset
+ * @param y The y-coordinate of the asset
+ * @param data Additional metadata needed for creating the asset
+ */
+export function createAssetInstance<T extends AssetId>(
+  type: T,
+  x: number,
+  y: number,
+  data: T extends 'ground' | 'road' ? undefined : Data
+) {
+  if (!(type in assets)) {
+    console.warn(`asset ${type} not found`)
+    return null
+  }
+
+  if (type === 'ground') {
+    return assets.ground(x, y)
+  }
+
+  return assets[type](x, y, data!)
+}
+export function isBuildingId(id: string): id is BuildingId {
+  return assetIds.includes(id as BuildingId)
+}
+
+export type AssetId = keyof typeof assets
+export type TerrainId = Extract<AssetId, 'ground'>
+export type BuildingId = Exclude<AssetId, 'ground'>
+
+const cube = new BoxGeometry(1, 1, 1)
+const loader = new TextureLoader()
+
+const textures = {
+  commercial1: loadTexture('/assets/stim-city/textures/commercial1.png'),
+  commercial2: loadTexture('/assets/stim-city/textures/commercial2.png'),
+  commercial3: loadTexture('/assets/stim-city/textures/commercial3.png'),
+  grass: loadTexture('/assets/stim-city/textures/grass.png'),
+  industrial1: loadTexture('/assets/stim-city/textures/industrial1.png'),
+  industrial2: loadTexture('/assets/stim-city/textures/industrial2.png'),
+  industrial3: loadTexture('/assets/stim-city/textures/industrial3.png'),
+  residential1: loadTexture('/assets/stim-city/textures/residential1.png'),
+  residential2: loadTexture('/assets/stim-city/textures/residential2.png'),
+  residential3: loadTexture('/assets/stim-city/textures/residential3.png'),
+}
 
 const assets = {
-  grass: (x: number, y: number, data: Data) => {
-    const material = new MeshLambertMaterial({ color: 0x00aa00 })
-    const mesh = new Mesh(geometry, material)
-    mesh.userData = { id: 'grass', x, y }
+  ground: (x: number, y: number) => {
+    const material = new MeshLambertMaterial({ map: textures.grass })
+    const mesh = new Mesh(cube, material)
+    mesh.userData = { x, y }
     mesh.position.set(x, -0.5, y)
+    mesh.receiveShadow = true
 
     return mesh
   },
-  residential: (x: number, y: number, data: Data) => {
-    console.log('residential', x, y, data)
-    const material = new MeshLambertMaterial({ color: 0x00ff00 })
-    const mesh = new Mesh(geometry, material)
-    mesh.userData = { id: 'residential', x, y }
-    mesh.scale.set(1, data.height, 1)
-    mesh.position.set(x, data.height / 2, y)
-
-    return mesh
-  },
-  commercial: (x: number, y: number, data: Data) => {
-    const material = new MeshLambertMaterial({ color: 0x0000ff })
-    const mesh = new Mesh(geometry, material)
-    mesh.userData = { id: 'commercial', x, y }
-    mesh.scale.set(1, data.height, 1)
-    mesh.position.set(x, data.height / 2, y)
-
-    return mesh
-  },
-  industrial: (x: number, y: number, data: Data) => {
-    const material = new MeshLambertMaterial({ color: 0xffff00 })
-    const mesh = new Mesh(geometry, material)
-    mesh.userData = { id: 'industrial', x, y }
-    mesh.scale.set(1, data.height, 1)
-    mesh.position.set(x, data.height / 2, y)
-
-    return mesh
-  },
-  road: (x: number, y: number, data: Data) => {
-    const material = new MeshLambertMaterial({ color: 0x4444440 })
-    const mesh = new Mesh(geometry, material)
-    mesh.userData = { id: 'road', x, y }
-    mesh.scale.set(1, data.height, 1)
-    mesh.position.set(x, data.height / 2, y)
+  residential: createZoneMesh,
+  commercial: createZoneMesh,
+  industrial: createZoneMesh,
+  road: (x: number, y: number) => {
+    const material = new MeshLambertMaterial({ color: 0x222222 })
+    const mesh = new Mesh(cube, material)
+    mesh.userData = { x, y }
+    mesh.scale.set(1, 0.02, 1)
+    mesh.position.set(x, 0.01, y)
+    mesh.receiveShadow = true
 
     return mesh
   },
 }
 const assetIds = Object.keys(assets) as AssetId[]
 
-export function createAssetInstance(
-  assetId: AssetId,
-  x: number,
-  y: number,
-  data: Data
-) {
-  if (!(assetId in assets)) {
-    console.warn(`asset ${assetId} not found`)
-    return null
+function loadTexture(path: string) {
+  const texture = loader.load(path)
+  texture.wrapS = texture.wrapT = RepeatWrapping
+  texture.repeat.set(1, 1)
+  return texture
+}
+function getTopMaterial() {
+  return new MeshLambertMaterial({ color: 0x555555 })
+}
+function getSideMaterial(type: Exclude<keyof typeof textures, 'grass'>) {
+  return new MeshLambertMaterial({ map: textures[type].clone() })
+}
+function createZoneMesh(x: number, y: number, data: Data) {
+  if (data.type === 'road') {
+    throw new Error('roads should not be created with createZoneMesh')
   }
+  const topMaterial = getTopMaterial()
+  const sideMaterial = getSideMaterial(data.type)
+  const mesh = new Mesh(cube, [
+    sideMaterial, // +X
+    sideMaterial, // -X
+    topMaterial, //  +Y
+    topMaterial, //  -Y
+    sideMaterial, // +Z
+    sideMaterial, // -Z
+  ])
+  mesh.userData = { x, y }
+  mesh.scale.set(0.8, (data.height - 0.95) / 2, 0.8)
+  mesh.material.forEach(material =>
+    material.map?.repeat.set(1, data.height - 1)
+  )
+  mesh.position.set(x, (data.height - 0.95) / 4, y)
+  mesh.receiveShadow = true
+  mesh.castShadow = true
 
-  return assets[assetId](x, y, data)
+  return mesh
 }
 
-type Data = { height: number }
-export type AssetId = keyof typeof assets
-export type TerrainId = Extract<AssetId, 'grass'>
-export type BuildingId = Exclude<AssetId, 'grass'>
-export function isBuildingId(id: string): id is BuildingId {
-  return assetIds.includes(id as BuildingId)
+type Data = {
+  height: number
+  type: Exclude<keyof typeof textures, 'grass'> | 'road'
+  style?: number
 }

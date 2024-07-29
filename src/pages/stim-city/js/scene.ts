@@ -6,16 +6,27 @@ import type { City } from './city'
 import { Controls } from './controls'
 
 export class Scene {
+  /** A reference to thethree.js scene */
   scene: THREE.Scene
+  /** A reference to the controls object */
   controls: Controls
+  /** A reference to the camera manager */
   camera: Camera
+  /** A reference to the three.js renderer */
   renderer: THREE.WebGLRenderer
+  /** A reference to the raycaster */
   raycaster: THREE.Raycaster
+
+  /** A reference to the mouse position */
   mouse: THREE.Vector2
+  /** The currently selected object */
   selectedObject: THREE.Object3D | null
+  /** The callback to be called when an object is selected */
   onObjectSelected: ((object: THREE.Object3D) => void) | undefined
 
+  /** A 2d array of building meshes at each tile location */
   terrainMeshes: THREE.Mesh[][] = []
+  /** A 2d array of building meshes at each tile location */
   buildingMeshes: (THREE.Mesh | null)[][] = []
 
   constructor() {
@@ -38,6 +49,9 @@ export class Scene {
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight)
+    this.renderer.setClearColor(0x000000, 0)
+    this.renderer.shadowMap.enabled = true
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
     gameWindow.appendChild(this.renderer.domElement)
 
     this.scene.add(this.camera.camera)
@@ -47,15 +61,19 @@ export class Scene {
   initialize(city: City) {
     this.scene.clear()
     this.terrainMeshes = []
+    this.buildingMeshes = []
 
     for (let x = 0; x < city.data.length; x++) {
       const column: THREE.Mesh[] = []
 
       for (let y = 0; y < city.data.length; y++) {
         // terrain
-        const mesh = createAssetInstance(city.data[x][y].terrainId, x, y, {
-          height: 0,
-        })
+        const mesh = createAssetInstance(
+          city.data[x][y].terrainId,
+          x,
+          y,
+          undefined
+        )
 
         if (mesh) {
           this.scene.add(mesh)
@@ -91,11 +109,20 @@ export class Scene {
           if (existingBuildingMesh) {
             this.scene.remove(existingBuildingMesh)
           }
+          const typeId =
+            tile.building.type === 'road'
+              ? 'road'
+              : tile.building.type.includes('residential')
+                ? 'residential'
+                : tile.building.type.includes('commercial')
+                  ? 'commercial'
+                  : 'industrial'
+
           this.buildingMeshes[x][y] = createAssetInstance(
-            tile.building.id,
+            typeId,
             x,
             y,
-            tile.building
+            tile.building.type === 'road' ? undefined : tile.building
           )
           this.scene.add(this.buildingMeshes[x][y]!)
           tile.building.dirty = false
@@ -105,17 +132,19 @@ export class Scene {
   }
 
   setupLights() {
-    const lights = [
-      new THREE.AmbientLight(0xffffff, 0.2),
-      new THREE.DirectionalLight(0xffffff, 0.3),
-      new THREE.DirectionalLight(0xffffff, 0.3),
-      new THREE.DirectionalLight(0xffffff, 0.3),
-    ]
-    lights[1].position.set(0, 1, 0)
-    lights[2].position.set(1, 1, 0)
-    lights[3].position.set(0, 1, 1)
+    const sun = new THREE.DirectionalLight(0xffffff, 1)
+    sun.position.set(20, 20, 20)
+    sun.castShadow = true
+    sun.shadow.camera.left = -10
+    sun.shadow.camera.right = 10
+    sun.shadow.camera.top = 0
+    sun.shadow.camera.bottom = -10
+    sun.shadow.camera.near = 0.5
+    sun.shadow.camera.far = 50
+    sun.shadow.mapSize.width = 1024
+    sun.shadow.mapSize.height = 1024
 
-    this.scene.add(...lights)
+    this.scene.add(...[sun, new THREE.AmbientLight(0xffffff, 0.3)])
   }
 
   onMouseDown(event: MouseEvent) {
@@ -131,12 +160,12 @@ export class Scene {
     )
     if (intersections.length > 0) {
       if (this.selectedObject && this.selectedObject instanceof THREE.Mesh) {
-        this.selectedObject.material.emissive.setHex(0x000000)
+        this.selectedObject.material.emissive?.setHex(0x000000)
       }
 
       this.selectedObject = intersections[0].object
       if (this.selectedObject instanceof THREE.Mesh) {
-        this.selectedObject.material.emissive.setHex(0x555555)
+        this.selectedObject.material.emissive?.setHex(0x555555)
       }
       if (this.onObjectSelected) {
         this.onObjectSelected(this.selectedObject)
