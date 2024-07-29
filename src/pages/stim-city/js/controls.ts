@@ -75,55 +75,74 @@ export class Controls {
   }
 
   #onKeyDown(event: KeyboardEvent) {
-    this.shiftKeyDown = event.key === 'Shift'
-    if (
-      (event.key === 'ArrowUp' || event.key.toLowerCase() === 'w') &&
-      !this.directions.up
-    ) {
-      this.directions.up = Date.now()
+    switch (event.key.toLowerCase()) {
+      case 'shift':
+        this.shiftKeyDown = true
+        break
+      case 'arrowup':
+      case 'w':
+        if (!this.directions.up) {
+          this.directions.up = Date.now()
+        }
+        break
+      case 'arrowdown':
+      case 's':
+        if (!this.directions.down) {
+          this.directions.down = Date.now()
+        }
+        break
+      case 'arrowleft':
+      case 'a':
+        if (!this.directions.left) {
+          this.directions.left = Date.now()
+        }
+        break
+      case 'arrowright':
+      case 'd':
+        if (!this.directions.right) {
+          this.directions.right = Date.now()
+        }
+        break
+      case 'q':
+        this.directions.cw = true
+        break
+      case 'e':
+        this.directions.ccw = true
+        break
     }
-    if (
-      (event.key === 'ArrowDown' || event.key.toLowerCase() === 's') &&
-      !this.directions.down
-    ) {
-      this.directions.down = Date.now()
-    }
-    if (
-      (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') &&
-      !this.directions.left
-    ) {
-      this.directions.left = Date.now()
-    }
-    if (
-      (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') &&
-      !this.directions.right
-    ) {
-      this.directions.right = Date.now()
-    }
-    this.directions.cw = event.key.toLowerCase() === 'q'
-    this.directions.ccw = event.key.toLowerCase() === 'e'
 
     for (const callback of this.subscribers.onKeyDown) {
       callback(event)
     }
   }
   #onKeyUp(event: KeyboardEvent) {
-    this.shiftKeyDown = false
-    if (event.key === 'ArrowUp' || event.key.toLowerCase() === 'w') {
-      this.directions.up = 0
+    switch (event.key.toLowerCase()) {
+      case 'shift':
+        this.shiftKeyDown = false
+        break
+      case 'arrowup':
+      case 'w':
+        this.directions.up = 0
+        break
+      case 'arrowdown':
+      case 's':
+        this.directions.down = 0
+        break
+      case 'arrowleft':
+      case 'a':
+        this.directions.left = 0
+        break
+      case 'arrowright':
+      case 'd':
+        this.directions.right = 0
+        break
+      case 'q':
+        this.directions.cw = false
+        break
+      case 'e':
+        this.directions.ccw = false
+        break
     }
-    if (event.key === 'ArrowDown' || event.key.toLowerCase() === 's') {
-      this.directions.down = 0
-    }
-
-    if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') {
-      this.directions.left = 0
-    }
-    if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') {
-      this.directions.right = 0
-    }
-    this.directions.cw = event.key.toLowerCase() === 'q'
-    this.directions.ccw = event.key.toLowerCase() === 'e'
 
     for (const callback of this.subscribers.onKeyUp) {
       callback(event)
