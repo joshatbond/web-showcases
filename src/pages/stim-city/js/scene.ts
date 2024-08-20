@@ -56,6 +56,7 @@ export class Scene {
 
     this.scene.add(this.camera.camera)
     this.controls.subscribe('onMouseDown', this.onMouseDown.bind(this))
+    this.controls.subscribe('onMouseMove', this.onMouseMove.bind(this))
   }
 
   initialize(city: City) {
@@ -170,6 +171,35 @@ export class Scene {
       if (this.onObjectSelected) {
         this.onObjectSelected(this.selectedObject)
       }
+    }
+  }
+  hoveredObject: THREE.Object3D | null = null
+  onMouseMove(event: MouseEvent) {
+    this.mouse.x =
+      (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1
+    this.mouse.y =
+      -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1
+
+    this.raycaster.setFromCamera(this.mouse, this.camera.camera)
+    const intersections = this.raycaster.intersectObjects(
+      this.scene.children,
+      false
+    )
+
+    if (intersections.length > 0) {
+      console.log(intersections[0].object)
+      if (this.hoveredObject && this.hoveredObject instanceof THREE.Mesh) {
+        this.hoveredObject.material.emissive?.setHex(0x000000)
+      }
+      this.hoveredObject = intersections[0].object
+      if (this.hoveredObject instanceof THREE.Mesh) {
+        this.hoveredObject.material.emissive?.setHex(0x555555)
+      }
+    } else {
+      if (this.hoveredObject && this.hoveredObject instanceof THREE.Mesh) {
+        this.hoveredObject.material.emissive?.setHex(0x000000)
+      }
+      this.hoveredObject = null
     }
   }
 
